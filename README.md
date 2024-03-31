@@ -1,6 +1,23 @@
 # GiveawaysBot
 A Python telegram Bot to host giveaways for certain channels. Uses PyTelegramBotAPI
 
+## BOT FUTURES
+> Users are stored in local database
+> Notifies every users in the database(only registered users) when a giveaway is started.
+> Only Admin can start and end a giveaway.
+> Bot selects random user when a giveaway ends and sends him/her a message that he/she is the winner.
+> Admin gets the winners Details
+ 
+
+## BOT COMMANDS
+```
+/start - to start the bot
+/register - for registration to the bots database
+/startgiveaway - for starting a giveaway
+/endgiveaway - this will stop the giveaway and select and random user as the winner
+/referral - to get your unique referral link(not fully functional)
+```
+
 To host on Your Local Machine:
 ```
 python3 bot.py
