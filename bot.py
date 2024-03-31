@@ -73,29 +73,33 @@ Invite your friends to our channels to increase your chances of becoming the win
 
 @bot.message_handler(commands=['startgiveaway'])
 def start_giveaway(message):
-    bot.send_message(message.chat.id, "Enter the Name of the give away.")
-    bot.register_next_step_handler(message, addgiveaway)
-def addgiveaway(message):
-    giveaway_img = "https://i.ibb.co/Sdtf87N/file-128.jpg"
-    giveawayname = message.text
-    started_by = message.chat.id
-    data = sqlite3.connect('users.db')
-    mycursor = data.cursor()
-    mycursor.execute("SELECT active FROM giveaway")
-    active_giveaway = mycursor.fetchone()
-
-    if active_giveaway and active_giveaway[0]:
-        bot.reply_to(message, "There is already an active giveaway. Please wait for the current giveaway to end before starting a new one.")
+    if str(message.from_user.id) == admin:
+        bot.send_message(message.chat.id, "Enter the Name of the give away.")
+        bot.register_next_step_handler(message, addgiveaway)
     else:
-        mycursor.execute("INSERT INTO giveaway (giveaway_name, started_by, active) VALUES (?, ?, ?)", (giveawayname, started_by, 1))
-        data.commit()
-        mycursor.execute('SELECT * FROM users')
-        users = mycursor.fetchall()
+        bot.reply_to(message, "You are not authorized to use this command.")
+def addgiveaway(message):
+    if str(message.from_user.id) == admin:
+        giveaway_img = "https://i.ibb.co/Sdtf87N/file-128.jpg"
+        giveawayname = message.text
+        started_by = message.chat.id
+        data = sqlite3.connect('users.db')
+        mycursor = data.cursor()
+        mycursor.execute("SELECT active FROM giveaway")
+        active_giveaway = mycursor.fetchone()
 
-        for user in users:
-            user_id = user[0]
-            firstname = user[2]
-            giveaway_message =f"""
+        if active_giveaway and active_giveaway[0]:
+            bot.reply_to(message, "There is already an active giveaway. Please wait for the current giveaway to end before starting a new one.")
+        else:
+            mycursor.execute("INSERT INTO giveaway (giveaway_name, started_by, active) VALUES (?, ?, ?)", (giveawayname, started_by, 1))
+            data.commit()
+            mycursor.execute('SELECT * FROM users')
+            users = mycursor.fetchall()
+
+            for user in users:
+                user_id = user[0]
+                firstname = user[2]
+                giveaway_message =f"""
 GIVEAWAY STARTED
 Hello {firstname},This is to notify you that a giveaway has started.
 No need to worry because you are already participating.
@@ -103,7 +107,9 @@ To increase your chances of winning, Share your invite link to your friends and 
 The giveaway draw will be done automatically and user will recieve his/her gift.
 We wish you Good Luck....
 """
-            bot.send_photo(user_id, photo=giveaway_img, caption=giveaway_message)
+                bot.send_photo(user_id, photo=giveaway_img, caption=giveaway_message)
+    else:            
+         bot.reply_to(message, "You are not authorized to use this command.")
 @bot.message_handler(commands=['endgiveaway'])
 def end_giveaway(message):
     data = sqlite3.connect('users.db')
